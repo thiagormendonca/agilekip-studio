@@ -2,6 +2,21 @@ import { IKipApp } from 'src/models/KipApp';
 import templates from 'src/templates';
 import { IProcess } from 'src/models/Process';
 import { IEntity } from 'src/models/Entity';
+import JSZip from 'jszip';
+
+interface IFile {
+  file: any;
+  type: string;
+  name: string;
+}
+
+function buildFile(file: any, type: string, name: string): IFile {
+  return {
+    file,
+    type,
+    name,
+  };
+}
 
 function downloadFile(file: any, type: string, name: string) {
   const blob = new Blob([file], { type });
@@ -9,6 +24,18 @@ function downloadFile(file: any, type: string, name: string) {
   link.href = window.URL.createObjectURL(blob);
   link.download = name;
   link.click();
+}
+
+function zipAndDownloadFiles(files: IFile[]) {
+  const zip = new JSZip();
+
+  files.forEach((file) => {
+    zip.file(file.name, file.file);
+  });
+
+  zip.generateAsync({ type: 'blob' }).then((content) => {
+    downloadFile(content, 'application/zip', 'app.zip');
+  });
 }
 
 function createJDLFile(app: IKipApp) {
@@ -19,10 +46,12 @@ function createJDLFile(app: IKipApp) {
     app.database
   );
 
-  downloadFile(jdlFile, 'text/plain', `${app.name}.jdl`);
+  return buildFile(jdlFile, 'text/plain', `${app.name}.jdl`);
 }
 
 function createUserTaskFiles(process: IProcess) {
+  const files: IFile[] = [];
+
   process.userTasks.forEach((task) => {
     const form = process.taskForms.find(
       (form) => form.processElementId === task.id
@@ -31,8 +60,10 @@ function createUserTaskFiles(process: IProcess) {
 
     const taskFile = templates.taskForm(process, task, form);
 
-    downloadFile(taskFile, 'application/json', `${task.name}.json`);
+    files.push(buildFile(taskFile, 'application/json', `${task.name}.json`));
   });
+
+  return files;
 }
 
 function createStartFormFiles(process: IProcess) {
@@ -42,7 +73,7 @@ function createStartFormFiles(process: IProcess) {
     process.startForm
   );
 
-  downloadFile(
+  return buildFile(
     startFormFile,
     'application/json',
     `${process.startEvent.name}.json`
@@ -50,16 +81,22 @@ function createStartFormFiles(process: IProcess) {
 }
 
 function createEntityFiles(entities: IEntity[]) {
-  entities.forEach((entity) => {
+  return entities.map((entity) => {
     const entityFile = templates.entity(entity);
 
-    downloadFile(entityFile, 'application/json', `${entity.name}.json`);
+    return buildFile(entityFile, 'application/json', `${entity.name}.json`);
   });
 }
 
 export function createAppFiles(app: IKipApp) {
-  createJDLFile(app);
-  app.processes.forEach(createUserTaskFiles);
-  app.processes.forEach(createStartFormFiles);
-  createEntityFiles(app.entities);
+  const files: IFile[] = [];
+
+  files.push(createJDLFile(app));
+  app.processes
+    .map(createUserTaskFiles)
+    .forEach((taskFiles) => taskFiles.forEach((file) => files.push(file)));
+  app.processes.map(createStartFormFiles).forEach((file) => files.push(file));
+  createEntityFiles(app.entities).forEach((file) => files.push(file));
+
+  zipAndDownloadFiles(files);
 }

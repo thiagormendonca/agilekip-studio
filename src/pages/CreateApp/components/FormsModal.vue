@@ -1,9 +1,9 @@
 <template>
-  <q-dialog :model-value="show" @hide="onClose">
+  <q-dialog :model-value="show" @hide="close">
     <q-card style="width: 800px">
       <q-toolbar>
         <q-toolbar-title>Update Form</q-toolbar-title>
-        <q-btn flat round dense icon="close" @click="onClose" />
+        <q-btn flat round dense icon="close" @click="close" />
       </q-toolbar>
       <q-card-section>
         <q-form class="column">
@@ -20,24 +20,38 @@
             :key="index"
             class="row items-center justify-between q-my-sm"
           >
-            <div class="col-5 row items-center">
+            <div class="col-5">
               <p class="q-mr-sm">Name</p>
               <SelectInput
                 class="col"
                 v-model="input.fieldNameRef"
                 lazy-rules
                 :rules="[(val) => !!val || 'Required']"
-                :options="processes[0].processBinding.fields.map((f) => f.name)"
+                :options="[
+                  ...processes[0].processBinding.fields.map((f) => f.name),
+                  ...processes[0].processBinding.relationships.map(
+                    (r) => `Relationship ${r.relationshipName}`
+                  ),
+                ]"
               />
             </div>
-            <div class="col-5 row items-center">
+            <div class="col-5 row q-pt-md">
               <q-checkbox
+                color="secondary"
+                size="xs"
                 v-model="input.readonly"
                 label="Read only"
-                class="q-mr-sm"
+              />
+              <q-checkbox
+                color="secondary"
+                size="xs"
+                v-model="input.required"
+                label="Required"
+                class="q-ml-sm"
               />
             </div>
             <q-btn
+              class="q-mt-md"
               flat
               round
               dense
@@ -63,7 +77,7 @@ import SelectInput from 'src/components/SelectInput.vue';
 import TextInput from 'src/components/TextInput.vue';
 import { IInputItem, ITaskForm } from 'src/models/TaskForm';
 import { useAppStore } from 'src/stores/app';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 interface IProps {
   show: boolean;
@@ -76,22 +90,38 @@ const props = defineProps<IProps>();
 const app = useAppStore();
 const { processes } = storeToRefs(app);
 
-const inputs = ref<IInputItem[]>([
-  {
-    fieldNameRef: '',
-    readonly: false,
-  },
-]);
+const emptyInput: IInputItem = {
+  fieldNameRef: '',
+  readonly: false,
+  required: false,
+};
+
+const inputs = ref<IInputItem[]>([structuredClone(emptyInput)]);
 
 function addInput() {
-  inputs.value.push({
-    fieldNameRef: '',
-    readonly: false,
-  });
+  inputs.value.push(structuredClone(emptyInput));
+}
+
+function clear() {
+  inputs.value = [structuredClone(emptyInput)];
 }
 
 function submit() {
   props.onSave(inputs.value);
+  close();
+}
+
+function close() {
+  clear();
   props.onClose();
 }
+
+watch(
+  () => props.form,
+  (form) => {
+    if (form && form.inputItems?.length) {
+      inputs.value = form.inputItems;
+    }
+  }
+);
 </script>

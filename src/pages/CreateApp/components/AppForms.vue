@@ -38,6 +38,10 @@ function editForm(form: ITaskForm) {
 function saveForm(inputs: IInputItem[]) {
   if (!formOnEdit.value) return;
 
+  if (formOnEdit.value.type === 'start-form') {
+    app.setStartFormInputItems(inputs);
+    return;
+  }
   app.setTaskFormInputItems(formOnEdit.value.name, inputs);
 }
 
@@ -56,6 +60,13 @@ const columns: QTableColumn[] = [
     name: 'type',
     label: 'Form Type',
     field: 'type',
+  },
+  {
+    name: 'fields',
+    label: 'Fields',
+    field: (row) => {
+      return row.inputItems.length;
+    },
   },
   {
     name: 'actions',

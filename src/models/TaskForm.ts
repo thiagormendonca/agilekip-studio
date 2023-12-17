@@ -11,4 +11,5 @@ export interface ITaskForm {
 export interface IInputItem {
   fieldNameRef: string;
   readonly: boolean;
+  required: boolean;
 }

@@ -3,4 +3,5 @@ export interface IRelationship {
   relationshipType: 'OneToOne' | 'OneToMany' | 'ManyToOne' | 'ManyToMany';
   otherEntityName: string;
   otherEntityField: string;
+  required: boolean;
 }
