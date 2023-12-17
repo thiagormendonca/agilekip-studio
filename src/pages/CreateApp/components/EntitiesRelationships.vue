@@ -14,40 +14,67 @@
         >
       </q-btn>
     </div>
-    <div v-if="app.entities.length > 1">
+    <div v-if="app.entities.length > 1" class="q-mb-md">
       <div
         v-for="(relationship, index) in relationships"
         :key="index"
-        class="row q-col-gutter-sm items-center q-my-sm"
+        class="column"
       >
-        <SelectInput
-          class="col"
-          v-model="relationship.entityName"
-          :options="app.entities.map((entity) => entity.name)"
-        />
-        <SelectInput
-          class="col"
-          v-model="relationship.relationshipType"
-          :options="relationshipTypes"
-        />
-        <SelectInput
-          class="col"
-          v-model="relationship.otherEntityName"
-          :options="app.entities.map((entity) => entity.name)"
-        />
-        <TextInput
-          class="col"
-          v-model="relationship.otherEntityField"
-          lazy-rules
-          :rules="[(val) => !!val || 'Required']"
-        />
-        <q-btn
-          flat
-          round
-          dense
-          icon="delete"
-          @click="removeRelationship(index)"
-        />
+        <div class="row q-col-gutter-sm items-center q-my-sm">
+          <div class="col-4">
+            <p>Entity</p>
+            <SelectInput
+              v-model="relationship.entityName"
+              :options="app.entities.map((entity) => entity.name)"
+            />
+          </div>
+          <div class="col-4">
+            <p>Type</p>
+            <SelectInput
+              class="col-4"
+              v-model="relationship.relationshipType"
+              :options="relationshipTypes"
+            />
+          </div>
+          <div class="col-4">
+            <p>Other Entity</p>
+            <SelectInput
+              class="col-4"
+              v-model="relationship.otherEntityName"
+              :options="app.entities.map((entity) => entity.name)"
+            />
+          </div>
+          <div class="col-4">
+            <p>Field</p>
+            <TextInput
+              class="col-4"
+              v-model="relationship.otherEntityField"
+              lazy-rules
+              :rules="[(val) => !!val || 'Required']"
+            />
+          </div>
+          <div class="col-4">
+            <p>Name</p>
+            <TextInput class="col-4" v-model="relationship.relationshipName" />
+          </div>
+          <div class="col-4 row items-center q-pt-md">
+            <q-checkbox
+              size="xs"
+              color="secondary"
+              v-model="relationship.required"
+              label="Required"
+            />
+            <q-btn
+              class="q-ml-md"
+              flat
+              round
+              dense
+              icon="delete"
+              @click="removeRelationship(index)"
+            />
+          </div>
+        </div>
+        <q-separator />
       </div>
     </div>
     <div class="mermaid" v-html="mermaidDiagramSvg"></div>
@@ -63,7 +90,12 @@ import { useAppStore } from 'src/stores/app';
 
 const app = useAppStore();
 
-const relationshipTypes = ['OneToOne', 'OneToMany', 'ManyToOne', 'ManyToMany'];
+const relationshipTypes = [
+  'one-to-one',
+  'one-to-many',
+  'many-to-one',
+  'many-to-many',
+];
 
 const emptyRelationship = {
   entityName: '',
@@ -71,6 +103,7 @@ const emptyRelationship = {
   relationshipType: '' as IRelationship['relationshipType'],
   otherEntityName: '',
   otherEntityField: '',
+  required: false,
 };
 
 const relationships = ref<(IRelationship & { entityName: string })[]>([

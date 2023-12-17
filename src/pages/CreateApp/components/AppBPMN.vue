@@ -46,6 +46,15 @@ function extractProcessesFromBPMN(definitions: any) {
       (el: any) => el.$type === 'bpmn:UserTask'
     );
 
+    // get user tasks from sub processes
+    element.flowElements
+      .filter((el: any) => el.$type === 'bpmn:SubProcess')
+      .map((el: any) =>
+        el.flowElements
+          .filter((el: any) => el.$type === 'bpmn:UserTask')
+          .map((el: any) => userTasks.push(el))
+      );
+
     processes.push({
       model: '',
       processBpmnId: element.id,
@@ -61,6 +70,8 @@ function extractProcessesFromBPMN(definitions: any) {
         processElementId: el.id,
         name: el.name,
         type: 'user-task-form',
+        inputItems: [],
+        relationships: [],
       })),
       startForm: {
         processElementId: startEvent.id,
@@ -109,7 +120,7 @@ async function uploaderFactory(files: any) {
 }
 
 function resetAndShowUploader() {
-  resetApp();
+  // resetApp();
   showUploader.value = true;
 }
 </script>

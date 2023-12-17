@@ -41,7 +41,109 @@
                   :options="fieldTypeOptions"
                 />
               </div>
+              <q-btn class="q-mt-lg" color="secondary" label="Rules">
+                <q-menu>
+                  <q-list style="min-width: 100px">
+                    <q-item
+                      clickable
+                      @click="field.rules.readonly = !field.rules.readonly"
+                    >
+                      <q-checkbox
+                        color="secondary"
+                        size="xs"
+                        v-model="field.rules.readonly"
+                      />
+                      <q-item-section>Read Only</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      @click="field.rules.required = !field.rules.required"
+                    >
+                      <q-checkbox
+                        color="secondary"
+                        size="xs"
+                        v-model="field.rules.required"
+                      />
+                      <q-item-section>Required</q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      @click="field.rules.unique = !field.rules.unique"
+                    >
+                      <q-checkbox
+                        color="secondary"
+                        size="xs"
+                        v-model="field.rules.unique"
+                      />
+                      <q-item-section>Unique</q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section
+                        ><TextInput
+                          color="secondary"
+                          v-model="field.rules.pattern"
+                          label="Pattern"
+                      /></q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section>
+                        <TextInput
+                          v-if="field.fieldType === 'Integer'"
+                          color="secondary"
+                          v-model="field.rules.min"
+                          label="Min"
+                          type="number"
+                        />
+                        <TextInput
+                          v-else
+                          color="secondary"
+                          v-model="field.rules.minlength"
+                          label="Min Length"
+                          type="number"
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section>
+                        <TextInput
+                          v-if="field.fieldType === 'Integer'"
+                          color="secondary"
+                          v-model="field.rules.max"
+                          label="Max"
+                          type="number"
+                        />
+                        <TextInput
+                          v-else
+                          color="secondary"
+                          v-model="field.rules.maxlength"
+                          label="Max Length"
+                          type="number"
+                        />
+                      </q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section
+                        ><TextInput
+                          color="secondary"
+                          v-model="field.rules.minbytes"
+                          label="Min Bytes"
+                          type="number"
+                      /></q-item-section>
+                    </q-item>
+                    <q-item>
+                      <q-item-section
+                        ><TextInput
+                          color="secondary"
+                          v-model="field.rules.maxbytes"
+                          label="Max Bytes"
+                          type="number"
+                      /></q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-btn>
               <q-btn
+                class="q-mt-lg"
                 :disable="fields.length === 1"
                 flat
                 round
@@ -84,13 +186,23 @@ const rules = [
   (val: string) => !val.includes(' ') || 'No spaces',
 ];
 
-const name = ref<string>('');
-const fields = ref<IField[]>([
-  {
-    name: '',
-    fieldType: '' as FieldType,
+const emptyField: IField = {
+  name: '',
+  fieldType: '' as FieldType,
+  rules: {
+    readonly: false,
+    required: false,
+    unique: false,
+    pattern: '',
+    minlength: undefined,
+    maxlength: undefined,
+    minbytes: undefined,
+    maxbytes: undefined,
   },
-]);
+};
+
+const name = ref<string>('');
+const fields = ref<IField[]>([structuredClone(emptyField)]);
 
 watch(
   () => props.entity,
@@ -123,20 +235,12 @@ const fieldTypeOptions = [
 ];
 
 function addField() {
-  fields.value.push({
-    name: '',
-    fieldType: '' as FieldType,
-  });
+  fields.value.push(structuredClone(emptyField));
 }
 
 function clear() {
   name.value = '';
-  fields.value = [
-    {
-      name: '',
-      fieldType: '' as FieldType,
-    },
-  ];
+  fields.value = [structuredClone(emptyField)];
 }
 
 function submit() {

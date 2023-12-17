@@ -1,7 +1,7 @@
 export interface IField {
   name: string;
   fieldType: FieldType;
-  rules?: IValidationRules;
+  rules: IValidationRules;
 }
 
 export interface IValidationRules {
@@ -13,24 +13,26 @@ export interface IValidationRules {
   maxlength?: number;
   minbytes?: number;
   maxbytes?: number;
+  min?: number;
+  max?: number;
 }
 
 export enum FieldType {
-  LocalDate = "LocalDate",
-  String = "String",
-  Integer = "Integer",
-  Long = "Long",
-  BigDecimal = "BigDecimal",
-  Float = "Float",
-  Double = "Double",
-  Enum = "Enum",
-  Boolean = "Boolean",
-  ZonedDateTime = "ZonedDateTime",
-  Instant = "Instant",
-  Duration = "Duration",
-  UUID = "UUID",
-  Blob = "Blob",
-  AnyBlob = "AnyBlob",
-  ImageBlob = "ImageBlob",
-  TextBlob = "TextBlob",
+  LocalDate = 'LocalDate',
+  String = 'String',
+  Integer = 'Integer',
+  Long = 'Long',
+  BigDecimal = 'BigDecimal',
+  Float = 'Float',
+  Double = 'Double',
+  Enum = 'Enum',
+  Boolean = 'Boolean',
+  ZonedDateTime = 'ZonedDateTime',
+  Instant = 'Instant',
+  Duration = 'Duration',
+  UUID = 'UUID',
+  Blob = 'Blob',
+  AnyBlob = 'AnyBlob',
+  ImageBlob = 'ImageBlob',
+  TextBlob = 'TextBlob',
 }

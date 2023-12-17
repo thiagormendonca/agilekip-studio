@@ -75,5 +75,8 @@ export const useAppStore = defineStore('app', {
         }
       });
     },
+    setStartFormInputItems(inputItems: IInputItem[]) {
+      this.processes[0].startForm.inputItems = inputItems;
+    },
   },
 });
