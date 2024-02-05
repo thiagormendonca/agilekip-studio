@@ -1,20 +1,7 @@
 <template>
   <div class="fit">
-    <div>
-      <p>Add Relationships to your Entities</p>
-      <q-btn
-        class="q-mt-md"
-        color="secondary"
-        label="Add Relationship"
-        @click="addRelationship"
-        :disable="app.entities.length < 2"
-      >
-        <q-tooltip v-if="app.entities.length < 2">
-          Add at least 2 Entities</q-tooltip
-        >
-      </q-btn>
-    </div>
-    <div v-if="app.entities.length > 1" class="q-mb-md">
+    <p>Add Relationships to your Entities</p>
+    <div v-if="app.entities.length > 1">
       <div
         v-for="(relationship, index) in relationships"
         :key="index"
@@ -50,12 +37,19 @@
               class="col-4"
               v-model="relationship.otherEntityField"
               lazy-rules
-              :rules="[(val) => !!val || 'Required']"
+              :rules="[
+                (val) => !!val || 'Required',
+                (val) => !val.includes(' ') || 'No spaces',
+              ]"
             />
           </div>
           <div class="col-4">
             <p>Name</p>
-            <TextInput class="col-4" v-model="relationship.relationshipName" />
+            <TextInput
+              class="col-4"
+              v-model="relationship.relationshipName"
+              :rules="[(val) => !val.includes(' ') || 'No spaces']"
+            />
           </div>
           <div class="col-4 row items-center q-pt-md">
             <q-checkbox
@@ -74,9 +68,20 @@
             />
           </div>
         </div>
-        <q-separator />
       </div>
     </div>
+    <q-btn
+      class="q-mb-md"
+      color="secondary"
+      label="Add Relationship"
+      @click="addRelationship"
+      :disable="app.entities.length < 2"
+    >
+      <q-tooltip v-if="app.entities.length < 2">
+        Add at least 2 Entities</q-tooltip
+      >
+    </q-btn>
+    <q-separator class="q-mb-md" />
     <div class="mermaid" v-html="mermaidDiagramSvg"></div>
   </div>
 </template>
