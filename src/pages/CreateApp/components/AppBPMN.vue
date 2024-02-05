@@ -26,9 +26,9 @@ import BpmnJS from 'bpmn-js/lib/Viewer';
 import { IEntity } from 'src/models/Entity';
 import { IProcess } from 'src/models/Process';
 import { useAppStore } from 'src/stores/app';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
-const { setProcesses, resetApp } = useAppStore();
+const app = useAppStore();
 
 const showUploader = ref(true);
 const bpmnViewer = ref<BpmnJS>();
@@ -84,7 +84,7 @@ function extractProcessesFromBPMN(definitions: any) {
     });
   });
 
-  setProcesses(processes);
+  app.setProcesses(processes);
 }
 
 async function uploaderFactory(files: any) {
@@ -120,7 +120,17 @@ async function uploaderFactory(files: any) {
 }
 
 function resetAndShowUploader() {
-  // resetApp();
+  app.resetApp();
   showUploader.value = true;
 }
+
+watch(
+  () => app.name,
+  (name) => {
+    if (name) {
+      showUploader.value = false;
+    }
+  },
+  { immediate: true }
+);
 </script>
