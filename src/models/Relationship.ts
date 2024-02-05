@@ -1,6 +1,10 @@
 export interface IRelationship {
   relationshipName: string;
-  relationshipType: 'OneToOne' | 'OneToMany' | 'ManyToOne' | 'ManyToMany';
+  relationshipType:
+    | 'one-to-one'
+    | 'one-to-many'
+    | 'many-to-one'
+    | 'many-to-many';
   otherEntityName: string;
   otherEntityField: string;
 }

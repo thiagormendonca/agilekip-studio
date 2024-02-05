@@ -89,13 +89,13 @@ function updateMermaidString() {
         );
         if (!otherEntity) return '';
         return `${entity.name.toUpperCase()} ${
-          relationship.relationshipType === 'OneToOne' ||
-          relationship.relationshipType === 'OneToMany'
+          relationship.relationshipType === 'one-to-one' ||
+          relationship.relationshipType === 'one-to-many'
             ? '||'
             : '}|'
         }--${
-          relationship.relationshipType === 'OneToOne' ||
-          relationship.relationshipType === 'ManyToOne'
+          relationship.relationshipType === 'one-to-one' ||
+          relationship.relationshipType === 'many-to-one'
             ? '||'
             : '|{'
         } ${otherEntity.name.toUpperCase()} : ""`;
