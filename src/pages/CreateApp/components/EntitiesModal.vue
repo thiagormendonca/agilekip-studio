@@ -17,6 +17,15 @@
               :rules="rules"
             />
           </div>
+          <div v-if="!isProcessBindingEntity" class="row items-center q-mb-md">
+            <p class="q-ma-none">Process Binding Domain Entity</p>
+            <q-checkbox
+              color="secondary"
+              size="xs"
+              v-model="isProcessBindingDomainEntity"
+              class="q-ml-none"
+            />
+          </div>
           <div class="row justify-between">
             <span class="">Fields</span>
             <q-btn flat round dense icon="add" @click="addField" />
@@ -175,8 +184,13 @@ import { ref, watch } from 'vue';
 interface IProps {
   show: boolean;
   onClose: () => void;
-  onSave: (name: string, fields: IField[]) => void;
+  onSave: (
+    name: string,
+    fields: IField[],
+    isProcessBindingDomainEntity: boolean
+  ) => void;
   entity?: IEntity;
+  isProcessBindingEntity?: boolean;
 }
 
 const props = defineProps<IProps>();
@@ -203,6 +217,7 @@ const emptyField: IField = {
 
 const name = ref<string>('');
 const fields = ref<IField[]>([structuredClone(emptyField)]);
+const isProcessBindingDomainEntity = ref<boolean>(false);
 
 watch(
   () => props.entity,
@@ -210,6 +225,7 @@ watch(
     if (entity) {
       name.value = entity.name;
       fields.value = entity.fields;
+      isProcessBindingDomainEntity.value = entity.isProcessBindingDomainEntity;
     }
   }
 );
@@ -241,10 +257,11 @@ function addField() {
 function clear() {
   name.value = '';
   fields.value = [structuredClone(emptyField)];
+  isProcessBindingDomainEntity.value = false;
 }
 
 function submit() {
-  props.onSave(name.value, fields.value);
+  props.onSave(name.value, fields.value, isProcessBindingDomainEntity.value);
   clear();
   props.onClose();
 }

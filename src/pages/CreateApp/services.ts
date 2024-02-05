@@ -3,6 +3,7 @@ import templates from 'src/templates';
 import { IProcess } from 'src/models/Process';
 import { IEntity } from 'src/models/Entity';
 import JSZip from 'jszip';
+import { ModelElement } from 'src/models/ModelElement';
 
 interface IFile {
   file: any;
@@ -80,15 +81,28 @@ function createStartFormFiles(process: IProcess) {
   );
 }
 
-function createEntityFiles(entities: IEntity[]) {
+function createEntityFiles(
+  entities: IEntity[],
+  type: 'domain' | 'process-binding',
+  element?: ModelElement,
+  domainEntityName?: string
+) {
   return entities.map((entity) => {
-    const entityFile = templates.entity(entity);
+    const entityFile = templates.entity(
+      entity,
+      type,
+      element,
+      domainEntityName
+    );
 
     return buildFile(entityFile, 'application/json', `${entity.name}.json`);
   });
 }
 
-export function createAppFiles(app: IKipApp) {
+export function createAppFiles(
+  app: IKipApp,
+  processBindingDomainEntity?: IEntity
+) {
   const files: IFile[] = [];
 
   files.push(createJDLFile(app));
@@ -96,7 +110,13 @@ export function createAppFiles(app: IKipApp) {
     .map(createUserTaskFiles)
     .forEach((taskFiles) => taskFiles.forEach((file) => files.push(file)));
   app.processes.map(createStartFormFiles).forEach((file) => files.push(file));
-  createEntityFiles(app.entities).forEach((file) => files.push(file));
+  createEntityFiles(app.entities, 'domain').forEach((file) => files.push(file));
+  createEntityFiles(
+    [app.processes[0].processBinding],
+    'process-binding',
+    app.processes[0].model,
+    processBindingDomainEntity?.name
+  ).forEach((file) => files.push(file));
 
   zipAndDownloadFiles(files);
 }

@@ -117,7 +117,8 @@ export function getEntityRelationshipsFromRelationships(
 export default (
   entity: IEntity,
   type: 'domain' | 'process-binding',
-  element?: ModelElement
+  element?: ModelElement,
+  domainEntityName?: string
 ) => {
   const template = {
     fields: generateEntityFields(entity.fields),
@@ -138,13 +139,12 @@ export default (
   };
 
   if (type === 'process-binding') {
-    return {
+    return JSON.stringify({
       ...template,
       processBpmnId: element?.id,
-      processEntityName: element?.name,
-      taskBpmnId: element?.id,
-    };
+      domainEntityName: domainEntityName,
+    });
   }
 
-  return template;
+  return JSON.stringify(template);
 };
