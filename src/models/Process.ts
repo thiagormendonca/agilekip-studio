@@ -1,9 +1,9 @@
-import { IStartEvent, IUserTask } from './ModelElement';
+import { IStartEvent, IUserTask, ModelElement } from './ModelElement';
 import { ITaskForm } from './TaskForm';
 import { IEntity } from './Entity';
 
 export interface IProcess {
-  model: string;
+  model: ModelElement;
   processBpmnId: string;
   startEvent: IStartEvent;
   userTasks: IUserTask[];

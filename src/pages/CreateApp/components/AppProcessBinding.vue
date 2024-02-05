@@ -17,6 +17,7 @@
     :show="showDialog"
     :on-close="() => (showDialog = false)"
     :on-save="addProcessBinding"
+    is-process-binding-entity
   />
 </template>
 <script setup lang="ts">
@@ -42,6 +43,7 @@ function addProcessBinding(name: string, fields: IField[]) {
       name,
       fields,
       relationships: [],
+      isProcessBindingDomainEntity: false,
     }
   );
 }

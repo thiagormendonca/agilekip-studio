@@ -47,7 +47,7 @@ import { useAppStore } from 'src/stores/app';
 const app = useAppStore();
 
 function createApp() {
-  createAppFiles(app);
+  createAppFiles(app, app.getProcessBindingDomainEntity());
 }
 </script>
 <style scoped>

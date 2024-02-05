@@ -58,6 +58,16 @@ export const useAppStore = defineStore('app', {
     addEntity(entity: IEntity) {
       this.entities.push(entity);
     },
+    clearProcessBindingDomainEntity() {
+      this.entities.map((entity) => {
+        entity.isProcessBindingDomainEntity = false;
+      });
+    },
+    getProcessBindingDomainEntity() {
+      return this.entities.find(
+        (entity) => entity.isProcessBindingDomainEntity
+      );
+    },
     updateEntitiesRelationships(
       relationships: (IRelationship & { entityName: string })[]
     ) {

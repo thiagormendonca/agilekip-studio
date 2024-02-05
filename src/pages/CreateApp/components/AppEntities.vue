@@ -38,13 +38,21 @@ function editEntity(entity: IEntity) {
   showDialog.value = true;
 }
 
-function saveEntity(name: string, fields: IField[]) {
+function saveEntity(
+  name: string,
+  fields: IField[],
+  isProcessBindingDomainEntity: boolean
+) {
+  if (isProcessBindingDomainEntity) app.clearProcessBindingDomainEntity();
+
   if (entityInDialog.value !== undefined) {
     const entityIndex = app.entities.findIndex(
       (el) => el.name === entityInDialog.value?.name
     );
     app.entities[entityIndex].name = name;
     app.entities[entityIndex].fields = fields;
+    app.entities[entityIndex].isProcessBindingDomainEntity =
+      isProcessBindingDomainEntity;
 
     if (entityInDialog.value.name !== name) {
       app.entities.forEach((entity) => {
@@ -64,6 +72,7 @@ function saveEntity(name: string, fields: IField[]) {
     name,
     fields,
     relationships: [],
+    isProcessBindingDomainEntity,
   });
 }
 

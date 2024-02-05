@@ -56,7 +56,7 @@ function extractProcessesFromBPMN(definitions: any) {
       );
 
     processes.push({
-      model: '',
+      model: { id: element.id, name: element.name },
       processBpmnId: element.id,
       startEvent: {
         id: startEvent.id,
